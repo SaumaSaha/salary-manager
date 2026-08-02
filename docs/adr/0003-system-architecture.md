@@ -517,7 +517,7 @@ FastAPI middleware configured to allow the Next.js dev server origin (`http://lo
 ```
 Terminal 1 (Backend):
   cd salary-manager-be
-  python -m venv venv && source venv/bin/activate
+  python -m venv .venv && source .venv/bin/activate
   pip install -r requirements.txt
   python scripts/seed.py           # Seeds 10,000 records (run once)
   uvicorn app.main:app --reload    # http://localhost:8000
