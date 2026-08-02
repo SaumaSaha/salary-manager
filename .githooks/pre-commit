@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pre-commit hook: run backend tests before committing
+# Pre-commit hook: run backend & frontend tests + linters before committing
 
 # ANSI color codes
 CYAN='\033[0;36m'
@@ -9,12 +9,29 @@ NC='\033[0m' # No Color
 
 printf "${CYAN}Running pre-commit checks...${NC}\n"
 
+# Backend checks
 if [ -d "salary-manager-be/.venv" ]; then
     printf "${CYAN}Running backend pytest suite...${NC}\n"
     salary-manager-be/.venv/bin/pytest salary-manager-be/tests
-    BE_STATUS=$?
-    if [ $BE_STATUS -ne 0 ]; then
+    if [ $? -ne 0 ]; then
         printf "${RED}Error: Backend tests failed. Aborting commit.${NC}\n"
+        exit 1
+    fi
+
+    printf "${CYAN}Running backend pylint...${NC}\n"
+    (cd salary-manager-be && PYTHONPATH=. .venv/bin/pylint app)
+    if [ $? -ne 0 ]; then
+        printf "${RED}Error: Backend pylint failed. Aborting commit.${NC}\n"
+        exit 1
+    fi
+fi
+
+# Frontend checks
+if [ -d "salary-manager-fe/node_modules" ]; then
+    printf "${CYAN}Running frontend eslint...${NC}\n"
+    (cd salary-manager-fe && npm run lint)
+    if [ $? -ne 0 ]; then
+        printf "${RED}Error: Frontend eslint failed. Aborting commit.${NC}\n"
         exit 1
     fi
 fi

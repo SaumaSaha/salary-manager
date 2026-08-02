@@ -1,4 +1,4 @@
-.PHONY: help install install-be install-fe seed dev-be dev-fe test test-be test-fe lint lint-be setup-hooks clean
+.PHONY: help install install-be install-fe seed dev-be dev-fe test test-be test-fe lint lint-be lint-fe setup-hooks clean
 
 help:
 	@echo "ACME Salary Manager - Commands:"
@@ -11,8 +11,9 @@ help:
 	@echo "  make test         - Run backend and frontend test suites"
 	@echo "  make test-be      - Run backend pytest suite"
 	@echo "  make test-fe      - Run frontend test suite"
-	@echo "  make lint         - Run backend linter (pylint)"
+	@echo "  make lint         - Run backend and frontend linters"
 	@echo "  make lint-be      - Run backend pylint"
+	@echo "  make lint-fe      - Run frontend eslint"
 	@echo "  make setup-hooks  - Configure git pre-commit hooks"
 	@echo "  make clean        - Remove bytecode cache files via pyclean"
 
@@ -22,7 +23,7 @@ install-be:
 install-fe:
 	cd salary-manager-fe && npm install
 
-install: install-be setup-hooks
+install: install-be install-fe setup-hooks
 
 seed:
 	cd salary-manager-be && .venv/bin/python scripts/seed.py
@@ -39,12 +40,15 @@ test-be:
 test-fe:
 	cd salary-manager-fe && npm test
 
-test: test-be
+test: test-be test-fe
 
 lint-be:
-	cd salary-manager-be && .venv/bin/pylint app
+	cd salary-manager-be && PYTHONPATH=. .venv/bin/pylint app
 
-lint: lint-be
+lint-fe:
+	cd salary-manager-fe && npm run lint
+
+lint: lint-be lint-fe
 
 setup-hooks:
 	./scripts/setup-hooks.sh

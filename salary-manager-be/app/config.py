@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "ACME Salary Manager API"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
-    
+
     # Database
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
