@@ -28,6 +28,13 @@ fi
 
 # Frontend checks
 if [ -d "salary-manager-fe/node_modules" ]; then
+    printf "${CYAN}Running frontend vitest suite...${NC}\n"
+    (cd salary-manager-fe && npm test)
+    if [ $? -ne 0 ]; then
+        printf "${RED}Error: Frontend tests failed. Aborting commit.${NC}\n"
+        exit 1
+    fi
+
     printf "${CYAN}Running frontend eslint...${NC}\n"
     (cd salary-manager-fe && npm run lint)
     if [ $? -ne 0 ]; then
