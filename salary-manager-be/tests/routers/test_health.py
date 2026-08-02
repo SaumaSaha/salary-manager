@@ -19,3 +19,11 @@ def test_root_endpoint(client):
     assert "message" in data
     assert "docs" in data
     assert "health" in data
+
+def test_ping_endpoint(client):
+    response = client.get("/api/v1/ping")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "pong"
+    assert data["service"] == "salary-manager-be"
+

@@ -1,3 +1,4 @@
+from typing import Dict
 from fastapi import APIRouter
 from app.config import settings
 
@@ -9,4 +10,12 @@ def health_check():
         "status": "ok",
         "project": settings.PROJECT_NAME,
         "version": settings.VERSION
+    }
+
+@router.get("/ping", summary="Ping Check")
+def ping_check() -> Dict[str, str]:
+    """Uptime monitoring endpoint returning basic service status."""
+    return {
+        "status": "pong",
+        "service": "salary-manager-be"
     }
