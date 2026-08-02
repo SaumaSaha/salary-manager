@@ -15,7 +15,7 @@ A web-based Employee Salary Management system for ACME Org to manage 10,000 empl
 
 ## Quick Start
 
-### 1. Backend
+### Backend
 
 ```bash
 cd salary-manager-be
@@ -25,12 +25,29 @@ python scripts/seed.py
 uvicorn app.main:app --reload
 ```
 
-### 2. Frontend
+### Frontend
 
 ```bash
 cd salary-manager-fe
 npm install
 npm run dev
+```
+
+## Running Tests
+
+### Backend
+
+```bash
+cd salary-manager-be
+source .venv/bin/activate
+pytest
+```
+
+### Frontend
+
+```bash
+cd salary-manager-fe
+npm test
 ```
 
 ## Documentation
