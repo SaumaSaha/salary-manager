@@ -1,47 +1,46 @@
-# Assessment with Product Framing 
- 
+# Assessment with Product Framing
 
 ## Expectations
-This exercise is intentionally designed to assess how you think, design, and build software in an AI‑driven environment.   
-You are required to use AI tools to accelerate your work. We care about how you use them, the clarity of your thinking, and the quality of your engineering decisions.   
-    
+This exercise is intentionally designed to assess how you think, design, and build software in an AI‑driven environment.
+You are required to use AI tools to accelerate your work. We care about how you use them, the clarity of your thinking, and the quality of your engineering decisions.
+
 ## We expect you to:
-Demonstrate clarity in thought and structured problem solving   
-Show strong engineering fundamentals & product thinking  
-Make thoughtful architectural and design decisions   
-Write production‑quality code and tests   
-Use AI intentionally while maintaining correctness and quality   
-Please make incremental commits so we can understand how your solution evolved.  
- 
+Demonstrate clarity in thought and structured problem solving
+Show strong engineering fundamentals & product thinking
+Make thoughtful architectural and design decisions
+Write production‑quality code and tests
+Use AI intentionally while maintaining correctness and quality
+Please make incremental commits so we can understand how your solution evolved.
+
 ## Goal
-Build employee salary management software for an organization with 10,000 employees.  
- 
+Build employee salary management software for an organization with 10,000 employees.
+
 ## User Persona
-HR Manager of the org  
- 
+HR Manager of the org
+
 ## Problem Statement
-Currently, ACME org’s HR team manages salary data for 10,000 employees across multiple countries, with everything managed via excels, which is tedious. We want the HR manager to manage the salaries data via web-based software and be able to answer questions about how the org pays people.  
- 
+Currently, ACME org’s HR team manages salary data for 10,000 employees across multiple countries, with everything managed via excels, which is tedious. We want the HR manager to manage the salaries data via web-based software and be able to answer questions about how the org pays people.
+
 ## Requirements
-Write a one-page requirements document before building the software, outlining the goal, scope & features, and what you are deliberately leaving out, and reasoning for it. 
- 
+Write a one-page requirements document before building the software, outlining the goal, scope & features, and what you are deliberately leaving out, and reasoning for it.
+
 ## Technical Constraints
-You should build end-to-end, fully functional software, including backend & UI.  
+You should build end-to-end, fully functional software, including backend & UI.
 
 ### Backend
-Language & Framework as per JD (preferred) or any other framework of your choice. Relational database of your choice, like SQLite. 
- 
-### UI 
-ReactJS or NextJS  
-Component library of your choice  
- 
-### Seeding 
-Seed script with 10,000 employees.  
- 
+Language & Framework as per JD (preferred) or any other framework of your choice. Relational database of your choice, like SQLite.
+
+### UI
+ReactJS or NextJS
+Component library of your choice
+
+### Seeding
+Seed script with 10,000 employees.
+
 ### Readiness
-Fully functional deployed software  
-Any video demo of the software  
- 
+Fully functional deployed software
+Any video demo of the software
+
 ### Development Approach
 Using agentic AI tools of your choice, build the solution while maintaining high standards of code quality and test coverage.
 

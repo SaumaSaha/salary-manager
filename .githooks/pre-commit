@@ -1,0 +1,23 @@
+#!/bin/sh
+# Pre-commit hook: run backend tests before committing
+
+# ANSI color codes
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+printf "${CYAN}Running pre-commit checks...${NC}\n"
+
+if [ -d "salary-manager-be/.venv" ]; then
+    printf "${CYAN}Running backend pytest suite...${NC}\n"
+    salary-manager-be/.venv/bin/pytest salary-manager-be/tests
+    BE_STATUS=$?
+    if [ $BE_STATUS -ne 0 ]; then
+        printf "${RED}Error: Backend tests failed. Aborting commit.${NC}\n"
+        exit 1
+    fi
+fi
+
+printf "${GREEN}Pre-commit checks passed!${NC}\n"
+exit 0
