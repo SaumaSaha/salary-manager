@@ -3,10 +3,10 @@ uvicorn[standard]
 sqlalchemy
 pydantic
 pydantic-settings
+email-validator
 faker
 httpx
 pytest
 pytest-asyncio
 pyclean
 pylint
-
