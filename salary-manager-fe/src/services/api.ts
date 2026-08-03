@@ -1,5 +1,6 @@
 import {
   Employee,
+  PaginationMeta,
   EmployeeListResponse,
   KPISummary,
   DepartmentAnalytics,
