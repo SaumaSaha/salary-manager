@@ -8,5 +8,6 @@ faker
 httpx
 pytest
 pytest-asyncio
+pytest-cov
 pyclean
 pylint
