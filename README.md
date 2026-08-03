@@ -74,6 +74,11 @@ make dev-fe
 make test
 ```
 
+### Run Backend Pytest Suite (100% Coverage Check)
+```bash
+make test-be
+```
+
 ### Run Frontend Vitest Suite
 ```bash
 make test-fe
@@ -82,6 +87,11 @@ make test-fe
 ### Run Complete Linters (Pylint + ESLint)
 ```bash
 make lint
+```
+
+### Run Backend Pylint (10.00/10 Rating)
+```bash
+make lint-be
 ```
 
 ### Run Frontend ESLint
