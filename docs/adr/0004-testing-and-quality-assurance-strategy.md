@@ -67,7 +67,7 @@ We select **Pytest** for backend testing, **Vitest** with **React Testing Librar
                            ▼
 ┌────────────────────────────────────────────────────────┐
 │ 3. Frontend Vitest Component Suite                     │
-│    vitest run (Target: 100% Passed)                   │
+│    vitest run (Target: 100% Passed)                    │
 └──────────────────────────┬─────────────────────────────┘
                            │
                     [Pass: All Green]

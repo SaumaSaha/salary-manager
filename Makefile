@@ -38,7 +38,7 @@ test-be:
 	cd salary-manager-be && .venv/bin/pytest --cov=app --cov-report=term-missing --cov-fail-under=100
 
 test-fe:
-	cd salary-manager-fe && npm test
+	cd salary-manager-fe && npm run test:coverage
 
 test: test-be test-fe
 

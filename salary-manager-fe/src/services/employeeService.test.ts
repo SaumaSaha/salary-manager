@@ -23,11 +23,36 @@ describe('Employee Service (`services/employeeService.ts`)', () => {
       json: async () => mockResponse,
     } as Response);
 
-    const result = await fetchEmployees({ page: 1, page_size: 20, search: 'John', department: ['Engineering'] });
+    const result = await fetchEmployees({
+      page: 1,
+      page_size: 20,
+      search: 'John',
+      sort_by: 'usd_salary',
+      sort_order: 'desc',
+      min_usd_salary: 50000,
+      max_usd_salary: 150000,
+      department: ['Engineering'],
+      country: ['USA', 'India'],
+    });
+
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/v1/employees?page=1&page_size=20&search=John&department=Engineering')
+      expect.stringContaining('/api/v1/employees?page=1&page_size=20&sort_by=usd_salary&sort_order=desc&search=John&min_usd_salary=50000&max_usd_salary=150000&department=Engineering&country=USA&country=India')
     );
     expect(result.items).toEqual(mockResponse.items);
+  });
+
+  it('fetchEmployees handles data fallback property and default pagination', async () => {
+    const mockResponse = {
+      data: [{ id: '2', first_name: 'Jane', last_name: 'Smith' }],
+    };
+    vi.mocked(global.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    } as Response);
+
+    const result = await fetchEmployees({});
+    expect(result.data).toEqual(mockResponse.data);
+    expect(result.pagination).toEqual({ page: 1, page_size: 20, total_records: 0, total_pages: 0 });
   });
 
   it('createEmployee sends POST request with payload', async () => {

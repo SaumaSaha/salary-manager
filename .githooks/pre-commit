@@ -29,8 +29,8 @@ fi
 
 # Frontend checks
 if [ -d "salary-manager-fe/node_modules" ]; then
-    printf "${CYAN}Running frontend vitest suite...${NC}\n"
-    (cd salary-manager-fe && npm test)
+    printf "${CYAN}Running frontend vitest suite with coverage check...${NC}\n"
+    (cd salary-manager-fe && npm run test:coverage)
     if [ $? -ne 0 ]; then
         printf "${RED}Error: Frontend tests failed. Aborting commit.${NC}\n"
         exit 1

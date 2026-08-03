@@ -28,6 +28,11 @@ describe('DeleteConfirmModal Component', () => {
       <DeleteConfirmModal isOpen={false} onClose={vi.fn()} onConfirm={vi.fn()} employee={mockEmp} />
     );
     expect(container.firstChild).toBeNull();
+
+    const { container: container2 } = render(
+      <DeleteConfirmModal isOpen={true} onClose={vi.fn()} onConfirm={vi.fn()} employee={null} />
+    );
+    expect(container2.firstChild).toBeNull();
   });
 
   it('renders confirmation text and triggers callbacks', () => {
@@ -46,5 +51,14 @@ describe('DeleteConfirmModal Component', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /delete employee/i }));
     expect(onConfirm).toHaveBeenCalled();
+  });
+
+  it('renders deleting state when deleting prop is true', () => {
+    render(
+      <DeleteConfirmModal isOpen={true} onClose={vi.fn()} onConfirm={vi.fn()} employee={mockEmp} deleting={true} />
+    );
+
+    const deleteBtn = screen.getByRole('button', { name: /deleting\.\.\./i });
+    expect(deleteBtn).toBeDisabled();
   });
 });

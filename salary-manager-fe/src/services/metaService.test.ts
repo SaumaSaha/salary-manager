@@ -34,4 +34,27 @@ describe('Meta Service (`services/metaService.ts`)', () => {
     const range = await fetchSalaryRange();
     expect(range).toEqual({ min_usd_salary: 10000, max_usd_salary: 300000 });
   });
+
+  it('fetchMetadata functions handle missing response fields with defaults', async () => {
+    vi.mocked(global.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    } as Response);
+    const depts = await fetchDepartments();
+    expect(depts).toEqual([]);
+
+    vi.mocked(global.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    } as Response);
+    const countries = await fetchCountries();
+    expect(countries).toEqual([]);
+
+    vi.mocked(global.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    } as Response);
+    const range = await fetchSalaryRange();
+    expect(range).toEqual({ min_usd_salary: 0, max_usd_salary: 500000 });
+  });
 });

@@ -36,4 +36,25 @@ describe('KPICards Component', () => {
     expect(screen.getByText('Min / Max Salary')).toBeInTheDocument();
     expect(screen.getByText('$18,000 / $350,000')).toBeInTheDocument();
   });
+
+  it('handles fallback property names lowest_salary_usd and highest_salary_usd', () => {
+    const fallbackData: KPISummary = {
+      total_payroll_usd: 100000,
+      average_salary_usd: 50000,
+      median_salary_usd: 50000,
+      lowest_salary_usd: 20000,
+      highest_salary_usd: 80000,
+      employee_count: 2,
+    };
+    render(<KPICards kpi={fallbackData} loading={false} />);
+
+    expect(screen.getByText('$20,000 / $80,000')).toBeInTheDocument();
+  });
+
+  it('handles missing value properties safely with default $0 and 0 formatting', () => {
+    const emptyData = {} as KPISummary;
+    render(<KPICards kpi={emptyData} loading={false} />);
+
+    expect(screen.getByText('$0 / $0')).toBeInTheDocument();
+  });
 });

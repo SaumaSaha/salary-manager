@@ -12,4 +12,12 @@ describe('Navbar Component', () => {
     fireEvent.click(btn);
     expect(onExport).toHaveBeenCalled();
   });
+
+  it('renders exporting state when exporting is true', () => {
+    const onExport = vi.fn();
+    render(<Navbar onExportCsv={onExport} exporting={true} />);
+
+    const btn = screen.getByRole('button', { name: /exporting\.\.\./i });
+    expect(btn).toBeDisabled();
+  });
 });
