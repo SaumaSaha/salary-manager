@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import Home from './page';
 import Providers from './providers';
 
-vi.mock('../services/api', () => ({
+vi.mock('../services', () => ({
   fetchEmployees: vi.fn().mockResolvedValue({
     data: [],
     items: [],

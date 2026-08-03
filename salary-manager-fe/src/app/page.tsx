@@ -27,7 +27,7 @@ import {
   updateEmployee,
   deleteEmployee,
   getExportCsvUrl,
-} from '../services/api';
+} from '../services';
 
 export default function Home() {
   const queryClient = useQueryClient();
