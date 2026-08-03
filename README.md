@@ -5,14 +5,18 @@ A high-performance web-based Employee Salary Management system for ACME Org to m
 ## Tech Stack
 
 - **Backend**: Python 3.14+, FastAPI, SQLAlchemy 2.0 ORM, Pydantic v2, SQLite (WAL mode)
-- **Frontend**: Next.js (React 19), Tailwind CSS, Recharts, TanStack Query v5
+- **Frontend**: Next.js 16 (React 19), TypeScript, Tailwind CSS v4, Lucide React, Vitest + Testing Library
 
 ---
 
 ## Project Structure
 
 - `salary-manager-be/`: FastAPI backend service (3-layer architecture: Routers → Services → Repositories)
-- `salary-manager-fe/`: Next.js frontend application
+- `salary-manager-fe/`: Next.js 16 frontend application (Component-Driven Architecture with typed API client)
+  - `src/app/`: Next.js pages & root layout (`page.tsx`, `globals.css`)
+  - `src/components/`: Reusable UI components (`Navbar`, `KPICards`, `FilterToolbar`, `EmployeeTable`, `EmployeeModal`, `DeleteConfirmModal`, `AnalyticsCharts`)
+  - `src/services/`: API client fetching FastAPI endpoints (`api.ts`)
+  - `src/types/`: TypeScript interface definitions (`index.ts`)
 - `docs/`: Product requirements (`REQUIREMENTS.md`) and Architecture Decision Records (`docs/adr/`)
 
 ---
@@ -29,11 +33,16 @@ make install
 make seed
 ```
 
-### 3. Start Backend Server
+### 3. Start Application
 ```bash
+# Start FastAPI backend server (Port 8000)
 make dev-be
+
+# Start Next.js frontend server (Port 3000)
+make dev-fe
 ```
-- API Endpoint: `http://localhost:8000/api/v1`
+- Frontend Application: `http://localhost:3000`
+- API Base Endpoint: `http://localhost:8000/api/v1`
 - Swagger OpenAPI Specs: `http://localhost:8000/docs`
 
 ---
@@ -60,14 +69,24 @@ make dev-be
 
 ## Running Verification
 
-### Run Backend Pytest Suite
+### Run Complete Test Suite (Backend + Frontend)
 ```bash
-make test-be
+make test
 ```
 
-### Run Backend Pylint (10.00/10 Rating)
+### Run Frontend Vitest Suite
 ```bash
-make lint-be
+make test-fe
+```
+
+### Run Complete Linters (Pylint + ESLint)
+```bash
+make lint
+```
+
+### Run Frontend ESLint
+```bash
+make lint-fe
 ```
 
 ---
