@@ -91,7 +91,7 @@ export interface EmployeeFormData {
   country: string;
   base_salary: number;
   currency: string;
-  bonus_percentage: number;
+  bonus_percentage?: number;
   gender: string;
   performance: number;
   hire_date: string;

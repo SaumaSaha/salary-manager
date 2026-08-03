@@ -125,6 +125,7 @@ describe('API Service (`services/api.ts`)', () => {
       country: 'USA',
       base_salary: 120000,
       currency: 'USD',
+      bonus_percentage: 0,
       gender: 'Female',
       performance: 4,
       hire_date: '2023-01-15',
