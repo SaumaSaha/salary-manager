@@ -63,7 +63,7 @@ export default function KPICards({ kpi, loading }: KPICardsProps) {
     },
     {
       title: 'Min / Max Salary',
-      value: `${formatCurrency(kpi.min_salary_usd)} / ${formatCurrency(kpi.max_salary_usd)}`,
+      value: `${formatCurrency(kpi.min_salary_usd ?? kpi.lowest_salary_usd)} / ${formatCurrency(kpi.max_salary_usd ?? kpi.highest_salary_usd)}`,
       subtitle: 'Compensation Range',
       icon: ArrowUpRight,
       color: 'from-sky-500/20 to-cyan-500/5 border-sky-500/30 text-sky-400',

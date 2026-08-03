@@ -84,7 +84,7 @@ export default function AnalyticsCharts({
                 <div key={c.country} className="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
                   <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
                     <span>{c.country}</span>
-                    <span className="text-emerald-400 font-bold">{(c.percentage_payroll || 0).toFixed(1)}% spend</span>
+                    <span className="text-emerald-400 font-bold">{((c.percentage_of_payroll ?? c.percentage_payroll) || 0).toFixed(1)}% spend</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
                     <span>{c.employee_count} headcount</span>
@@ -115,7 +115,7 @@ export default function AnalyticsCharts({
                     <span>{g.gender}</span>
                     <span className="text-purple-400 font-bold">{formatCurrency(g.average_salary_usd)} avg</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-1">Headcount: {(g.headcount || 0).toLocaleString()}</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Headcount: {((g.headcount ?? g.employee_count) || 0).toLocaleString()}</div>
                 </div>
               ))
             )}

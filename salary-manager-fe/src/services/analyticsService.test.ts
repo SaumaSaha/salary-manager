@@ -34,36 +34,36 @@ describe('Analytics Service (`services/analyticsService.ts`)', () => {
     expect(result).toEqual(mockKPI);
   });
 
-  it('fetchDepartmentAnalytics requests /api/v1/analytics/by-department', async () => {
-    const mockData = { departments: [{ department: 'Engineering', employee_count: 10, total_payroll_usd: 500000, average_salary_usd: 50000 }] };
+  it('fetchDepartmentAnalytics handles backend items array response', async () => {
+    const mockItems = [{ department: 'Engineering', employee_count: 10, total_payroll_usd: 500000, average_salary_usd: 50000 }];
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
-      json: async () => mockData,
+      json: async () => ({ items: mockItems }),
     } as Response);
 
     const result = await fetchDepartmentAnalytics();
-    expect(result).toEqual(mockData);
+    expect(result.departments).toEqual(mockItems);
   });
 
-  it('fetchCountryAnalytics requests /api/v1/analytics/by-country', async () => {
-    const mockData = { countries: [{ country: 'USA', employee_count: 5, total_payroll_usd: 300000, percentage_payroll: 60 }] };
+  it('fetchCountryAnalytics handles backend items array response', async () => {
+    const mockItems = [{ country: 'USA', employee_count: 5, total_payroll_usd: 300000, percentage_of_payroll: 60 }];
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
-      json: async () => mockData,
+      json: async () => ({ items: mockItems }),
     } as Response);
 
     const result = await fetchCountryAnalytics();
-    expect(result).toEqual(mockData);
+    expect(result.countries).toEqual(mockItems);
   });
 
-  it('fetchGenderAnalytics requests /api/v1/analytics/by-gender', async () => {
-    const mockData = { gender_metrics: [{ gender: 'Female', average_salary_usd: 60000, headcount: 10 }] };
+  it('fetchGenderAnalytics handles backend items array response', async () => {
+    const mockItems = [{ gender: 'Female', average_salary_usd: 60000, employee_count: 10, total_payroll_usd: 600000 }];
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: true,
-      json: async () => mockData,
+      json: async () => ({ items: mockItems }),
     } as Response);
 
     const result = await fetchGenderAnalytics();
-    expect(result).toEqual(mockData);
+    expect(result.gender_metrics).toEqual(mockItems);
   });
 });

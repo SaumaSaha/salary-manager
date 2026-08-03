@@ -34,8 +34,10 @@ export interface KPISummary {
   total_payroll_usd: number;
   average_salary_usd: number;
   median_salary_usd: number;
-  min_salary_usd: number;
-  max_salary_usd: number;
+  min_salary_usd?: number;
+  max_salary_usd?: number;
+  lowest_salary_usd?: number;
+  highest_salary_usd?: number;
   employee_count: number;
 }
 
@@ -54,21 +56,26 @@ export interface CountryMetric {
   country: string;
   employee_count: number;
   total_payroll_usd: number;
-  percentage_payroll: number;
+  percentage_of_payroll?: number;
+  percentage_payroll?: number;
 }
 
 export interface CountryAnalytics {
   countries: CountryMetric[];
+  items?: CountryMetric[];
 }
 
 export interface GenderMetric {
   gender: string;
   average_salary_usd: number;
-  headcount: number;
+  employee_count?: number;
+  headcount?: number;
+  total_payroll_usd?: number;
 }
 
 export interface GenderAnalytics {
   gender_metrics: GenderMetric[];
+  items?: GenderMetric[];
 }
 
 export interface EmployeeFilterParams {
