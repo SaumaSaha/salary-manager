@@ -3,25 +3,25 @@ import { Search, RotateCcw, Filter } from 'lucide-react';
 import { EmployeeFilterParams } from '../types';
 
 interface FilterToolbarProps {
-  departments: string[];
-  countries: string[];
-  salaryBounds: { min_usd_salary: number; max_usd_salary: number };
+  departments?: string[];
+  countries?: string[];
+  salaryBounds?: { min_usd_salary: number; max_usd_salary: number };
   filters: EmployeeFilterParams;
   onFilterChange: (filters: Partial<EmployeeFilterParams>) => void;
   onResetFilters: () => void;
 }
 
 export default function FilterToolbar({
-  departments,
-  countries,
-  salaryBounds,
+  departments = [],
+  countries = [],
+  salaryBounds = { min_usd_salary: 0, max_usd_salary: 500000 },
   filters,
   onFilterChange,
   onResetFilters,
 }: FilterToolbarProps) {
   const [searchInput, setSearchInput] = useState(filters.search || '');
-  const [selectedDepts, setSelectedDepts] = useState<string[]>(filters.department || []);
-  const [selectedCountries, setSelectedCountries] = useState<string[]>(filters.country || []);
+  const [selectedDept, setSelectedDept] = useState<string>(filters.department?.[0] || '');
+  const [selectedCountry, setSelectedCountry] = useState<string>(filters.country?.[0] || '');
   const [minSalary, setMinSalary] = useState<string>(filters.min_usd_salary?.toString() || '');
   const [maxSalary, setMaxSalary] = useState<string>(filters.max_usd_salary?.toString() || '');
 
@@ -37,16 +37,16 @@ export default function FilterToolbar({
     return () => clearTimeout(handler);
   }, [searchInput, searchFilter, onFilterChange]);
 
-  const handleDeptSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const opts = Array.from(e.target.selectedOptions, (option) => option.value);
-    setSelectedDepts(opts);
-    onFilterChange({ department: opts });
+  const handleDeptChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedDept(val);
+    onFilterChange({ department: val ? [val] : [] });
   };
 
-  const handleCountrySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const opts = Array.from(e.target.selectedOptions, (option) => option.value);
-    setSelectedCountries(opts);
-    onFilterChange({ country: opts });
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedCountry(val);
+    onFilterChange({ country: val ? [val] : [] });
   };
 
   const handleMinSalaryBlur = () => {
@@ -61,8 +61,8 @@ export default function FilterToolbar({
 
   const handleReset = () => {
     setSearchInput('');
-    setSelectedDepts([]);
-    setSelectedCountries([]);
+    setSelectedDept('');
+    setSelectedCountry('');
     setMinSalary('');
     setMaxSalary('');
     onResetFilters();
@@ -88,38 +88,32 @@ export default function FilterToolbar({
           />
         </div>
 
-        {/* Department Multi-Select */}
+        {/* Department Dropdown */}
         <div>
           <select
-            multiple
-            value={selectedDepts}
-            onChange={handleDeptSelect}
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 h-10 overflow-y-auto"
+            value={selectedDept}
+            onChange={handleDeptChange}
+            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option disabled className="text-slate-500 font-bold">
-              Department (Hold Cmd/Ctrl)
-            </option>
+            <option value="">All Departments</option>
             {departments.map((d) => (
-              <option key={d} value={d} className="py-0.5">
+              <option key={d} value={d}>
                 {d}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Country Multi-Select */}
+        {/* Country Dropdown */}
         <div>
           <select
-            multiple
-            value={selectedCountries}
-            onChange={handleCountrySelect}
-            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 h-10 overflow-y-auto"
+            value={selectedCountry}
+            onChange={handleCountryChange}
+            className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option disabled className="text-slate-500 font-bold">
-              Country (Hold Cmd/Ctrl)
-            </option>
+            <option value="">All Countries</option>
             {countries.map((c) => (
-              <option key={c} value={c} className="py-0.5">
+              <option key={c} value={c}>
                 {c}
               </option>
             ))}

@@ -38,7 +38,14 @@ export async function fetchEmployees(params: EmployeeFilterParams = {}): Promise
   }
 
   const res = await fetch(`${API_BASE}/employees?${query.toString()}`);
-  return handleResponse<EmployeeListResponse>(res);
+  const data = await handleResponse<{ items?: Employee[]; data?: Employee[]; pagination?: PaginationMeta }>(res);
+  const list = data?.items || data?.data || [];
+
+  return {
+    items: list,
+    data: list,
+    pagination: data?.pagination || { page: 1, page_size: 20, total_records: 0, total_pages: 0 },
+  };
 }
 
 export async function fetchKPISummary(): Promise<KPISummary> {
@@ -48,34 +55,41 @@ export async function fetchKPISummary(): Promise<KPISummary> {
 
 export async function fetchDepartmentAnalytics(): Promise<DepartmentAnalytics> {
   const res = await fetch(`${API_BASE}/analytics/by-department`);
-  return handleResponse<DepartmentAnalytics>(res);
+  const data = await handleResponse<DepartmentAnalytics>(res);
+  return { departments: data?.departments || [] };
 }
 
 export async function fetchCountryAnalytics(): Promise<CountryAnalytics> {
   const res = await fetch(`${API_BASE}/analytics/by-country`);
-  return handleResponse<CountryAnalytics>(res);
+  const data = await handleResponse<CountryAnalytics>(res);
+  return { countries: data?.countries || [] };
 }
 
 export async function fetchGenderAnalytics(): Promise<GenderAnalytics> {
   const res = await fetch(`${API_BASE}/analytics/by-gender`);
-  return handleResponse<GenderAnalytics>(res);
+  const data = await handleResponse<GenderAnalytics>(res);
+  return { gender_metrics: data?.gender_metrics || [] };
 }
 
 export async function fetchDepartments(): Promise<string[]> {
   const res = await fetch(`${API_BASE}/meta/departments`);
   const data = await handleResponse<{ departments: string[] }>(res);
-  return data.departments;
+  return data?.departments || [];
 }
 
 export async function fetchCountries(): Promise<string[]> {
   const res = await fetch(`${API_BASE}/meta/countries`);
   const data = await handleResponse<{ countries: string[] }>(res);
-  return data.countries;
+  return data?.countries || [];
 }
 
 export async function fetchSalaryRange(): Promise<{ min_usd_salary: number; max_usd_salary: number }> {
   const res = await fetch(`${API_BASE}/meta/salary-range`);
-  return handleResponse<{ min_usd_salary: number; max_usd_salary: number }>(res);
+  const data = await handleResponse<{ min_usd_salary: number; max_usd_salary: number }>(res);
+  return {
+    min_usd_salary: data?.min_usd_salary || 0,
+    max_usd_salary: data?.max_usd_salary || 500000,
+  };
 }
 
 export async function createEmployee(data: EmployeeFormData): Promise<Employee> {

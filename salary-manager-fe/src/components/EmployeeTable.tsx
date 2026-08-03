@@ -3,11 +3,11 @@ import { Employee, PaginationMeta } from '../types';
 import { ArrowUpDown, ArrowUp, ArrowDown, Edit2, Trash2, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react';
 
 interface EmployeeTableProps {
-  employees: Employee[];
-  pagination: PaginationMeta;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
-  loading: boolean;
+  employees?: Employee[];
+  pagination?: PaginationMeta;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  loading?: boolean;
   onSortChange: (column: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
@@ -17,11 +17,11 @@ interface EmployeeTableProps {
 }
 
 export default function EmployeeTable({
-  employees,
-  pagination,
-  sortBy,
-  sortOrder,
-  loading,
+  employees = [],
+  pagination = { page: 1, page_size: 20, total_records: 0, total_pages: 0 },
+  sortBy = 'last_name',
+  sortOrder = 'asc',
+  loading = false,
   onSortChange,
   onPageChange,
   onPageSizeChange,
@@ -29,6 +29,9 @@ export default function EmployeeTable({
   onDeleteEmployee,
   onAddEmployee,
 }: EmployeeTableProps) {
+  const safeEmployees = employees || [];
+  const safePagination = pagination || { page: 1, page_size: 20, total_records: 0, total_pages: 0 };
+
   const formatCurrency = (val: number, currency: string) => {
     try {
       return new Intl.NumberFormat('en-US', {
@@ -67,9 +70,9 @@ export default function EmployeeTable({
         <div>
           <h2 className="text-lg font-bold text-slate-100">Employee Master Directory</h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Showing {pagination.total_records > 0 ? (pagination.page - 1) * pagination.page_size + 1 : 0} -{' '}
-            {Math.min(pagination.page * pagination.page_size, pagination.total_records)} of{' '}
-            <span className="font-semibold text-slate-200">{pagination.total_records.toLocaleString()}</span> employees
+            Showing {safePagination.total_records > 0 ? (safePagination.page - 1) * safePagination.page_size + 1 : 0} -{' '}
+            {Math.min(safePagination.page * safePagination.page_size, safePagination.total_records)} of{' '}
+            <span className="font-semibold text-slate-200">{(safePagination.total_records || 0).toLocaleString()}</span> employees
           </p>
         </div>
 
@@ -87,7 +90,7 @@ export default function EmployeeTable({
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span>Per page:</span>
             <select
-              value={pagination.page_size}
+              value={safePagination.page_size}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               className="bg-slate-950 border border-slate-700/80 text-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
@@ -126,14 +129,14 @@ export default function EmployeeTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/60">
-            {employees.length === 0 ? (
+            {!safeEmployees || safeEmployees.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center py-12 text-slate-500 font-medium">
                   No employee records found matching your filters.
                 </td>
               </tr>
             ) : (
-              employees.map((emp) => (
+              safeEmployees.map((emp) => (
                 <tr key={emp.id} className="hover:bg-slate-800/40 transition-colors">
                   <td className="px-6 py-4 font-medium text-slate-100">
                     <div>{`${emp.first_name} ${emp.last_name}`}</div>
@@ -196,22 +199,22 @@ export default function EmployeeTable({
       {/* Pagination Footer */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-t border-slate-800 bg-slate-950/60 text-xs text-slate-400">
         <div>
-          Page <span className="font-semibold text-slate-200">{pagination.page}</span> of{' '}
-          <span className="font-semibold text-slate-200">{pagination.total_pages}</span>
+          Page <span className="font-semibold text-slate-200">{safePagination.page}</span> of{' '}
+          <span className="font-semibold text-slate-200">{safePagination.total_pages}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onPageChange(pagination.page - 1)}
-            disabled={pagination.page <= 1}
+            onClick={() => onPageChange(safePagination.page - 1)}
+            disabled={safePagination.page <= 1}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:hover:bg-slate-800 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Previous</span>
           </button>
           <button
-            onClick={() => onPageChange(pagination.page + 1)}
-            disabled={pagination.page >= pagination.total_pages}
+            onClick={() => onPageChange(safePagination.page + 1)}
+            disabled={safePagination.page >= safePagination.total_pages}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 disabled:opacity-40 disabled:hover:bg-slate-800 transition-all"
           >
             <span>Next</span>

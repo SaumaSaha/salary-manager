@@ -25,7 +25,8 @@ export interface PaginationMeta {
 }
 
 export interface EmployeeListResponse {
-  data: Employee[];
+  items: Employee[];
+  data?: Employee[];
   pagination: PaginationMeta;
 }
 

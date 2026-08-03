@@ -130,7 +130,7 @@ export default function Home() {
   const loadEmployees = useCallback(async () => {
     try {
       const res = await fetchEmployees(filters);
-      setEmployees(res.data);
+      setEmployees(res.items || res.data || []);
       setPagination(res.pagination);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to load employees';
@@ -146,7 +146,7 @@ export default function Home() {
       try {
         const res = await fetchEmployees(filters);
         if (!ignore) {
-          setEmployees(res.data);
+          setEmployees(res.items || res.data || []);
           setPagination(res.pagination);
         }
       } catch (err: unknown) {

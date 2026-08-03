@@ -23,7 +23,7 @@ describe('API Service (`services/api.ts`)', () => {
 
   it('fetchEmployees requests /api/v1/employees with query parameters', async () => {
     const mockResponse = {
-      data: [{ id: '1', first_name: 'John', last_name: 'Doe' }],
+      items: [{ id: '1', first_name: 'John', last_name: 'Doe' }],
       pagination: { page: 1, page_size: 20, total_records: 1, total_pages: 1 },
     };
     vi.mocked(global.fetch).mockResolvedValueOnce({
@@ -35,7 +35,7 @@ describe('API Service (`services/api.ts`)', () => {
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/api/v1/employees?page=1&page_size=20&search=John&department=Engineering')
     );
-    expect(result).toEqual(mockResponse);
+    expect(result.items).toEqual(mockResponse.items);
   });
 
   it('fetchKPISummary requests /api/v1/analytics/summary', async () => {
