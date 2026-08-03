@@ -9,7 +9,7 @@ help:
 	@echo "  make dev-be       - Start FastAPI backend server"
 	@echo "  make dev-fe       - Start Next.js frontend server"
 	@echo "  make test         - Run backend and frontend test suites"
-	@echo "  make test-be      - Run backend pytest suite"
+	@echo "  make test-be      - Run backend pytest suite with coverage"
 	@echo "  make test-fe      - Run frontend test suite"
 	@echo "  make lint         - Run backend and frontend linters"
 	@echo "  make lint-be      - Run backend pylint"
@@ -35,7 +35,7 @@ dev-fe:
 	cd salary-manager-fe && npm run dev
 
 test-be:
-	cd salary-manager-be && .venv/bin/pytest
+	cd salary-manager-be && .venv/bin/pytest --cov=app --cov-report=term-missing --cov-fail-under=100
 
 test-fe:
 	cd salary-manager-fe && npm test

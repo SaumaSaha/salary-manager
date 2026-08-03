@@ -11,12 +11,13 @@ printf "${CYAN}Running pre-commit checks...${NC}\n"
 
 # Backend checks
 if [ -d "salary-manager-be/.venv" ]; then
-    printf "${CYAN}Running backend pytest suite...${NC}\n"
-    salary-manager-be/.venv/bin/pytest salary-manager-be/tests
+    printf "${CYAN}Running backend pytest suite with 100%% coverage check...${NC}\n"
+    (cd salary-manager-be && .venv/bin/pytest --cov=app --cov-report=term-missing --cov-fail-under=100)
     if [ $? -ne 0 ]; then
-        printf "${RED}Error: Backend tests failed. Aborting commit.${NC}\n"
+        printf "${RED}Error: Backend tests failed or code coverage is below 100%%. Aborting commit.${NC}\n"
         exit 1
     fi
+
 
     printf "${CYAN}Running backend pylint...${NC}\n"
     (cd salary-manager-be && PYTHONPATH=. .venv/bin/pylint app)
