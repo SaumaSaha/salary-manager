@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import KPICards from '../components/KPICards';
 import FilterToolbar from '../components/FilterToolbar';
@@ -10,11 +11,6 @@ import EmployeeModal from '../components/EmployeeModal';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import {
   Employee,
-  PaginationMeta,
-  KPISummary,
-  DepartmentAnalytics,
-  CountryAnalytics,
-  GenderAnalytics,
   EmployeeFilterParams,
   EmployeeFormData,
 } from '../types';
@@ -34,15 +30,9 @@ import {
 } from '../services/api';
 
 export default function Home() {
-  // Master state
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta>({
-    page: 1,
-    page_size: 20,
-    total_records: 0,
-    total_pages: 0,
-  });
+  const queryClient = useQueryClient();
 
+  // Filters state
   const [filters, setFilters] = useState<EmployeeFilterParams>({
     page: 1,
     page_size: 20,
@@ -53,20 +43,6 @@ export default function Home() {
     country: [],
   });
 
-  const [kpi, setKpi] = useState<KPISummary | null>(null);
-  const [deptAnalytics, setDeptAnalytics] = useState<DepartmentAnalytics | null>(null);
-  const [countryAnalytics, setCountryAnalytics] = useState<CountryAnalytics | null>(null);
-  const [genderAnalytics, setGenderAnalytics] = useState<GenderAnalytics | null>(null);
-
-  const [departments, setDepartments] = useState<string[]>([]);
-  const [countries, setCountries] = useState<string[]>([]);
-  const [salaryBounds, setSalaryBounds] = useState<{ min_usd_salary: number; max_usd_salary: number }>({
-    min_usd_salary: 0,
-    max_usd_salary: 500000,
-  });
-
-  const [loadingTable, setLoadingTable] = useState<boolean>(true);
-  const [loadingAnalytics, setLoadingAnalytics] = useState<boolean>(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Modals state
@@ -74,132 +50,112 @@ export default function Home() {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
-  const [deleting, setDeleting] = useState<boolean>(false);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   }, []);
 
-  // Fetch Metadata choices
-  useEffect(() => {
-    let isMounted = true;
-    const loadMeta = async () => {
-      try {
-        const [depts, ctrs, bounds] = await Promise.all([
-          fetchDepartments(),
-          fetchCountries(),
-          fetchSalaryRange(),
-        ]);
-        if (isMounted) {
-          setDepartments(depts);
-          setCountries(ctrs);
-          setSalaryBounds(bounds);
-        }
-      } catch (err: unknown) {
-        console.error('Failed to load metadata:', err);
-      }
-    };
-    loadMeta();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // TanStack Queries
+  const { data: employeeData, isLoading: loadingTable } = useQuery({
+    queryKey: ['employees', filters],
+    queryFn: () => fetchEmployees(filters),
+  });
 
-  // Fetch Analytics (KPIs + Charts)
-  const loadAnalytics = useCallback(async () => {
-    try {
-      const [kpiRes, deptRes, countryRes, genderRes] = await Promise.all([
-        fetchKPISummary(),
-        fetchDepartmentAnalytics(),
-        fetchCountryAnalytics(),
-        fetchGenderAnalytics(),
-      ]);
-      setKpi(kpiRes);
-      setDeptAnalytics(deptRes);
-      setCountryAnalytics(countryRes);
-      setGenderAnalytics(genderRes);
-    } catch (err: unknown) {
-      console.error('Failed to fetch analytics:', err);
-    } finally {
-      setLoadingAnalytics(false);
-    }
-  }, []);
+  const { data: kpi, isLoading: loadingKPI } = useQuery({
+    queryKey: ['kpi-summary'],
+    queryFn: fetchKPISummary,
+  });
 
-  // Fetch Employees List
-  const loadEmployees = useCallback(async () => {
-    try {
-      const res = await fetchEmployees(filters);
-      setEmployees(res.items || res.data || []);
-      setPagination(res.pagination);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to load employees';
+  const { data: deptAnalytics } = useQuery({
+    queryKey: ['dept-analytics'],
+    queryFn: fetchDepartmentAnalytics,
+  });
+
+  const { data: countryAnalytics } = useQuery({
+    queryKey: ['country-analytics'],
+    queryFn: fetchCountryAnalytics,
+  });
+
+  const { data: genderAnalytics } = useQuery({
+    queryKey: ['gender-analytics'],
+    queryFn: fetchGenderAnalytics,
+  });
+
+  const { data: departments = [] } = useQuery({
+    queryKey: ['meta-departments'],
+    queryFn: fetchDepartments,
+  });
+
+  const { data: countries = [] } = useQuery({
+    queryKey: ['meta-countries'],
+    queryFn: fetchCountries,
+  });
+
+  const { data: salaryBounds = { min_usd_salary: 0, max_usd_salary: 500000 } } = useQuery({
+    queryKey: ['meta-salary-range'],
+    queryFn: fetchSalaryRange,
+  });
+
+  // TanStack Mutations with automatic cache invalidation
+  const createMutation = useMutation({
+    mutationFn: createEmployee,
+    onSuccess: () => {
+      showToast('New employee created successfully!');
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['dept-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['country-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['gender-analytics'] });
+      setIsModalOpen(false);
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to create employee';
       showToast(msg, 'error');
-    } finally {
-      setLoadingTable(false);
-    }
-  }, [filters, showToast]);
+    },
+  });
 
-  useEffect(() => {
-    let ignore = false;
-    const run = async () => {
-      try {
-        const res = await fetchEmployees(filters);
-        if (!ignore) {
-          setEmployees(res.items || res.data || []);
-          setPagination(res.pagination);
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          const msg = err instanceof Error ? err.message : 'Failed to load employees';
-          showToast(msg, 'error');
-        }
-      } finally {
-        if (!ignore) setLoadingTable(false);
-      }
-    };
-    run();
-    return () => {
-      ignore = true;
-    };
-  }, [filters, showToast]);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<EmployeeFormData> }) => updateEmployee(id, data),
+    onSuccess: () => {
+      showToast('Employee details updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['dept-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['country-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['gender-analytics'] });
+      setIsModalOpen(false);
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to update employee';
+      showToast(msg, 'error');
+    },
+  });
 
-  useEffect(() => {
-    let ignore = false;
-    const run = async () => {
-      try {
-        const [kpiRes, deptRes, countryRes, genderRes] = await Promise.all([
-          fetchKPISummary(),
-          fetchDepartmentAnalytics(),
-          fetchCountryAnalytics(),
-          fetchGenderAnalytics(),
-        ]);
-        if (!ignore) {
-          setKpi(kpiRes);
-          setDeptAnalytics(deptRes);
-          setCountryAnalytics(countryRes);
-          setGenderAnalytics(genderRes);
-        }
-      } catch (err: unknown) {
-        console.error('Failed to fetch analytics:', err);
-      } finally {
-        if (!ignore) setLoadingAnalytics(false);
-      }
-    };
-    run();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const deleteMutation = useMutation({
+    mutationFn: deleteEmployee,
+    onSuccess: () => {
+      showToast('Employee record deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      queryClient.invalidateQueries({ queryKey: ['kpi-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['dept-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['country-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['gender-analytics'] });
+      setIsDeleteOpen(false);
+      setEmployeeToDelete(null);
+    },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : 'Failed to delete employee';
+      showToast(msg, 'error');
+    },
+  });
 
   // Handlers for Filters, Sort & Pagination
   const handleFilterChange = (newFilters: Partial<EmployeeFilterParams>) => {
-    setLoadingTable(true);
     setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
   };
 
   const handleResetFilters = () => {
-    setLoadingTable(true);
     setFilters({
       page: 1,
       page_size: 20,
@@ -214,7 +170,6 @@ export default function Home() {
   };
 
   const handleSortChange = (column: string) => {
-    setLoadingTable(true);
     setFilters((prev) => {
       const isSameCol = prev.sort_by === column;
       const nextOrder = isSameCol && prev.sort_order === 'asc' ? 'desc' : 'asc';
@@ -223,16 +178,14 @@ export default function Home() {
   };
 
   const handlePageChange = (newPage: number) => {
-    setLoadingTable(true);
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    setLoadingTable(true);
     setFilters((prev) => ({ ...prev, page_size: newPageSize, page: 1 }));
   };
 
-  // CRUD Mutations
+  // Modal Handlers
   const handleOpenAddModal = () => {
     setSelectedEmployee(null);
     setIsModalOpen(true);
@@ -248,39 +201,17 @@ export default function Home() {
     setIsDeleteOpen(true);
   };
 
-  const handleSaveEmployee = async (formData: EmployeeFormData) => {
-    try {
-      if (selectedEmployee) {
-        await updateEmployee(selectedEmployee.id, formData);
-        showToast('Employee details updated successfully!');
-      } else {
-        await createEmployee(formData);
-        showToast('New employee created successfully!');
-      }
-      setIsModalOpen(false);
-      loadEmployees();
-      loadAnalytics();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to save employee';
-      showToast(msg, 'error');
+  const handleSaveEmployee = (formData: EmployeeFormData) => {
+    if (selectedEmployee) {
+      updateMutation.mutate({ id: selectedEmployee.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!employeeToDelete) return;
-    setDeleting(true);
-    try {
-      await deleteEmployee(employeeToDelete.id);
-      showToast('Employee record deleted successfully');
-      setIsDeleteOpen(false);
-      setEmployeeToDelete(null);
-      loadEmployees();
-      loadAnalytics();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete employee';
-      showToast(msg, 'error');
-    } finally {
-      setDeleting(false);
+  const handleConfirmDelete = () => {
+    if (employeeToDelete) {
+      deleteMutation.mutate(employeeToDelete.id);
     }
   };
 
@@ -289,6 +220,9 @@ export default function Home() {
     window.open(downloadUrl, '_blank');
     showToast('Exporting employee CSV dataset...');
   };
+
+  const employees = employeeData?.items || employeeData?.data || [];
+  const pagination = employeeData?.pagination || { page: 1, page_size: 20, total_records: 0, total_pages: 0 };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white">
@@ -309,14 +243,14 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto px-6 py-4">
         {/* Executive KPI Cards */}
-        <KPICards kpi={kpi} loading={loadingAnalytics} />
+        <KPICards kpi={kpi || null} loading={loadingKPI} />
 
         {/* Analytics Charts */}
         <AnalyticsCharts
-          departmentData={deptAnalytics}
-          countryData={countryAnalytics}
-          genderData={genderAnalytics}
-          loading={loadingAnalytics}
+          departmentData={deptAnalytics || null}
+          countryData={countryAnalytics || null}
+          genderData={genderAnalytics || null}
+          loading={loadingKPI}
         />
 
         {/* Search & Filter Toolbar */}
@@ -362,7 +296,7 @@ export default function Home() {
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
         employee={employeeToDelete}
-        deleting={deleting}
+        deleting={deleteMutation.isPending}
       />
     </div>
   );
