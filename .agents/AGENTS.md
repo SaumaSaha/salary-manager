@@ -1,10 +1,10 @@
 # Salary Manager Workspace Agent Rules & Workflow
 
-This project uses a 9-phase subagent workflow for all code modifications, feature implementations, and architecture changes.
+This project uses a 10-phase subagent workflow for all code modifications, feature implementations, and architecture changes.
 
 ## Agent Roles & Execution Order
 
-Whenever a user requests a new feature, bug fix, or code modification, you MUST execute the work sequentially through the following 9 specialized agents:
+Whenever a user requests a new feature, bug fix, or code modification, you MUST execute the work sequentially through the following 10 specialized agents:
 
 1. **Test-Writer Agent** (`test-writer-agent`):
    - Writes backend (`pytest` under `salary-manager-be/tests/`) and frontend (`Jest` / `Testing Library` under `salary-manager-fe/src/__tests__/`) test suites BEFORE code implementation (TDD).
@@ -21,17 +21,21 @@ Whenever a user requests a new feature, bug fix, or code modification, you MUST 
 5. **Test-Verifier Agent** (`test-verifier-agent`):
    - Executes backend (`make test-be`) and frontend (`make test-fe`) test suites and verifies 100% pass rate.
 
-6. **Lint-Verifier Agent** (`lint-verifier-agent`):
+6. **Coverage-Check Agent** (`coverage-check-agent`):
+   - Executes test coverage reporting (`pytest --cov`, `--cov-fail-under=100`) and verifies 100% code coverage across backend and frontend modules with 0 missed statements.
+
+7. **Lint-Verifier Agent** (`lint-verifier-agent`):
    - Executes backend (`make lint-be`) and frontend (`make lint-fe`) linters and verifies 0 linter violations.
 
-7. **Doc-Writer Agent** (`doc-writer-agent`):
+8. **Doc-Writer Agent** (`doc-writer-agent`):
    - Updates project documentation in `docs/` (`docs/adr/`, requirements, API contracts) and keeps `README.md` and docstrings aligned with changes.
 
-8. **Performance Benchmark Agent** (`performance-benchmark-agent`):
+9. **Performance Benchmark Agent** (`performance-benchmark-agent`):
    - Verifies database query efficiency (< 100ms response SLA for 10,000 employee dataset), query indexing, pagination bounds, and React UI render performance.
 
-9. **Commit Agent** (`commit-agent`):
+10. **Commit Agent** (`commit-agent`):
    - Creates small, meaningful git commits after each agent phase using Conventional Commits format. Ensures the git history clearly documents the development process (tests first, then implementation, then refactoring, then fixes, then docs).
+
 
 ## Commit Rules
 
