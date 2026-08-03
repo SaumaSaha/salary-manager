@@ -106,3 +106,14 @@ def test_delete_employee_api(client, sample_employee_payload):
 
     get_resp = client.get(f"/api/v1/employees/{emp_id}")
     assert get_resp.status_code == 404
+
+
+def test_create_employee_invalid_payload_validation_error(client):
+    """Test POST /api/v1/employees with invalid payload triggers custom 422 validation handler."""
+    invalid_payload = {"first_name": "Jane", "email": "invalid-email"}
+    response = client.post("/api/v1/employees", json=invalid_payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert data["detail"] == "Validation error in request payload or query parameters."
+    assert "errors" in data
+

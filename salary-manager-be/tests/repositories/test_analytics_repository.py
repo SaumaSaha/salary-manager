@@ -186,3 +186,20 @@ def test_get_by_gender_average_salary_correct(db):
     assert female.employee_count == 2
     assert female.average_salary_usd == 90_000.0
     assert female.total_payroll_usd == 180_000.0
+
+
+def test_kpi_summary_even_count_median_fallback():
+    """Verify median calculation fallback to avg when find_all returns incomplete items for even headcount."""
+    from unittest.mock import MagicMock
+    mock_db = MagicMock()
+    mock_db.count.return_value = 2
+    mock_db.aggregate.return_value = [(200.0, 100.0, 50.0, 150.0)]
+    # Return 1 item instead of 2 to trigger fallback branch on line 69
+    mock_emp = MagicMock()
+    mock_emp.usd_salary = 100.0
+    mock_db.find_all.return_value = [mock_emp]
+
+    repo = AnalyticsRepository(mock_db)
+    summary = repo.get_kpi_summary()
+    assert summary.median_salary_usd == 100.0
+

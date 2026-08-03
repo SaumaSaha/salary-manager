@@ -255,3 +255,13 @@ def test_stream_all_filtered_with_department_filter(db):
     all_emps = [e for batch in batches for e in batch]
     assert len(all_emps) == 1
     assert all_emps[0].department == "Marketing"
+
+
+def test_get_salary_range_empty_result():
+    """Verify get_salary_range returns (0.0, 0.0) when aggregate result is an empty list."""
+    from unittest.mock import MagicMock
+    mock_db = MagicMock()
+    mock_db.aggregate.return_value = []
+    repo = EmployeeRepository(mock_db)
+    assert repo.get_salary_range() == (0.0, 0.0)
+

@@ -28,3 +28,13 @@ def test_currency_conversion_unsupported(db):
     
     assert exc_info.value.status_code == 422
     assert "Unsupported currency" in exc_info.value.detail
+
+
+def test_currency_get_rate_cache_hit(db):
+    """Verify second lookup for same currency returns rate from cache."""
+    service = CurrencyService(db)
+    rate1 = service.get_rate("EUR")
+    assert "EUR" in service._cache
+    rate2 = service.get_rate("EUR")
+    assert rate1 == rate2
+
