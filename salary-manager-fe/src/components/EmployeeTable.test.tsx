@@ -104,9 +104,15 @@ describe('EmployeeTable Component', () => {
     expect(screen.getByText('No employee records found matching your filters.')).toBeInTheDocument();
   });
 
-  it('renders loading spinner overlay when loading is true', () => {
-    const { container } = render(<EmployeeTable {...defaultProps} loading={true} />);
+  it('renders loading spinner overlay when loading is true and no employees exist', () => {
+    const { container } = render(<EmployeeTable {...defaultProps} employees={[]} loading={true} />);
     expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+  });
+
+  it('keeps rows visible and applies subtle dimming transition when isFetching is true', () => {
+    render(<EmployeeTable {...defaultProps} isFetching={true} />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.queryByTestId('table-fetching-indicator')).not.toBeInTheDocument();
   });
 
   it('triggers onEditEmployee and onDeleteEmployee when action buttons are clicked', () => {
@@ -121,3 +127,4 @@ describe('EmployeeTable Component', () => {
     expect(defaultProps.onDeleteEmployee).toHaveBeenCalledWith(mockEmployees[0]);
   });
 });
+
