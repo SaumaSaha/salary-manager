@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import KPICards from '../components/KPICards';
 import FilterToolbar from '../components/FilterToolbar';
@@ -57,9 +57,10 @@ export default function Home() {
   }, []);
 
   // TanStack Queries
-  const { data: employeeData, isLoading: loadingTable } = useQuery({
+  const { data: employeeData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
     queryKey: ['employees', filters],
     queryFn: () => fetchEmployees(filters),
+    placeholderData: keepPreviousData,
   });
 
   const { data: kpi, isLoading: loadingKPI } = useQuery({
@@ -270,6 +271,7 @@ export default function Home() {
           sortBy={filters.sort_by || 'last_name'}
           sortOrder={filters.sort_order || 'asc'}
           loading={loadingTable}
+          isFetching={fetchingTable}
           onSortChange={handleSortChange}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}

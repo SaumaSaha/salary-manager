@@ -8,6 +8,7 @@ interface EmployeeTableProps {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   loading?: boolean;
+  isFetching?: boolean;
   onSortChange: (column: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
@@ -22,6 +23,7 @@ export default function EmployeeTable({
   sortBy = 'last_name',
   sortOrder = 'asc',
   loading = false,
+  isFetching = false,
   onSortChange,
   onPageChange,
   onPageSizeChange,
@@ -65,6 +67,7 @@ export default function EmployeeTable({
 
   return (
     <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden shadow-xl my-6">
+
       {/* Header Actions */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-slate-800">
         <div>
@@ -104,8 +107,8 @@ export default function EmployeeTable({
 
       {/* Table Container */}
       <div className="overflow-x-auto relative">
-        {loading && (
-          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
+        {loading && safeEmployees.length === 0 && (
+          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] z-10 flex items-center justify-center min-h-[200px]">
             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
@@ -128,7 +131,7 @@ export default function EmployeeTable({
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className={`divide-y divide-slate-800/60 transition-opacity duration-300 ${isFetching ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             {!safeEmployees || safeEmployees.length === 0 ? (
               <tr>
                 <td colSpan={8} className="text-center py-12 text-slate-500 font-medium">
